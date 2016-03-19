@@ -70,6 +70,8 @@ __PS_NO_UNDERLINE=$(sgr -p '24')
 
 __PS_RESET=$(sgr -p '0')
 
+# reference:
+#     https://gist.github.com/jasonm23/2868981
 __PS_12=$(sgr -p '38;5;12')
 
 function __prompt_command() {

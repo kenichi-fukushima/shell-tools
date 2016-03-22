@@ -78,7 +78,7 @@ function color_catalog256() {
 
 export __GIT_ROOT=$HOME/GitClients
 
-function gcd() {
+function __gf_cd() {
     local query_terms="$@"
     local paths=$(git-find.py $query_terms)
     local old_ifs="$IFS"
@@ -99,8 +99,69 @@ function gcd() {
     fi
 }
 
-function gls() {
+function __gf_ls() {
     git-find.py
+}
+
+function __gf_clone() {
+    local label
+    if [[ $# == 0 ]]; then
+	__gf_help
+	return 1
+    else
+	local url="$1"
+	if [[ $# == 1 ]]; then
+	    local label="Dev"
+	else
+	    local label="$2"
+	fi
+    fi
+
+    if [[ "$url" =~ ^https?://([^/]+)/([^/]+)/([^/]+)(\.git)?$ ]]; then
+	local site=${BASH_REMATCH[1]}
+	local organization=${BASH_REMATCH[2]}
+	local repository=${BASH_REMATCH[3]}
+	local parent_dir="${__GIT_ROOT}/${site}/${organization}/${repository}"
+	local dir="${parent_dir}/${label}"
+	if [[ -a "$dir" ]]; then
+	    echo "$dir: the directory already exists."
+	    return 1
+	fi
+	mkdir -p "${parent_dir}"
+	cd "${parent_dir}"
+	git clone "${url}" || exit $?
+	mv "${repository}" "${label}"
+	cd "${label}"
+    else
+	echo "${url}: the url can't be parsed."
+	return 1
+    fi
+}
+
+function __gf_help() {
+    echo "gf cd|create|help|ls"
+}
+
+function gf() {
+    if [[ $# = 0 ]]; then
+	__gf__help
+    fi
+
+    local command=$1
+    shift
+    case $command in
+	cd )
+	    __gf_cd "$@"
+	    ;;
+	clone )
+	    __gf_clone "$@"
+	    ;;
+	ls )
+	    __gf_ls "$@"
+	    ;;
+	* )
+	    __gf_help "$@"
+    esac
 }
 
 ################################################################################

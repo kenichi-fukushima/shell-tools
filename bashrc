@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
 ################################################################################
+# Utility commands
+################################################################################
+
+function get_full_path() {
+    echo $(cd $1; echo $PWD)
+}
+
+################################################################################
 # Terminal Control
 ################################################################################
 
@@ -72,7 +80,7 @@ export __GIT_ROOT=$HOME/GitClients
 
 function gcd() {
     local query_terms="$@"
-    local paths=$(find_git.py $query_terms)
+    local paths=$(git-find.py $query_terms)
     local old_ifs="$IFS"
     IFS=$'\n'
     set -- $paths
@@ -92,7 +100,7 @@ function gcd() {
 }
 
 function gls() {
-    find_git.py
+    git-find.py
 }
 
 ################################################################################
@@ -109,6 +117,9 @@ __PS_FG_YELLOW=$(sgr -p '33')
 __PS_FG_WHITE=$(sgr -p '37')
 __PS_NO_FG=$(sgr -p '39')
 
+__PS_BOLD=$(sgr -p '1')
+__PS_NO_BOLD=$(sgr -p '22')
+
 __PS_UNDERLINE=$(sgr -p '4')
 __PS_NO_UNDERLINE=$(sgr -p '24')
 
@@ -123,6 +134,8 @@ __PS_70=$(sgr -p '38;5;70')
 __PS_242=$(sgr -p '38;5;242')
 
 function __prompt_command() {
+    local status_code=$?
+    local result
     if [[ $PWD =~ ^${__GIT_ROOT}/([^/]+)/([^/]+)/([^/]+)/([^/]+)(/.*)? ]]; then
 	local site=${BASH_REMATCH[1]}
 	local repository=${BASH_REMATCH[2]}
@@ -131,7 +144,7 @@ function __prompt_command() {
 	local rel_path="${BASH_REMATCH[5]}"
 	local branch=$(git branch | grep "*")
 	branch=${branch#* }
-	local result="${__PS_UNDERLINE}"
+	result="${__PS_UNDERLINE}"
 	result="${result}${__PS_31}${project}${__PS_NO_FG}"
 	if [[ $label == Dev ]]; then
 	    local print_label=""
@@ -143,11 +156,21 @@ function __prompt_command() {
 	if [[ "$rel_path" ]]; then
 	    result="${result}${__PS_242}:${rel_path}${__PS_NO_FG}"
 	fi
-	result="${result}${__PS_NO_UNDERLINE} $ "
-	PS1="$result"
+	result="${result}${__PS_NO_UNDERLINE}"
     else
-	PS1="${__PS_4}${__PS_UNDERLINE}\w${__PS_NO_UNDERLINE} "'$'"${__PS_RESET} "
+	result="${__PS_4}${__PS_UNDERLINE}\w${__PS_NO_UNDERLINE}${__PS_RESET}"
     fi
+    if [[ $status_code != 0 ]]; then
+	result="${result} ${__PS_BOLD}${__PS_FG_RED}${status_code}${__PS_RESET}"
+    fi
+    result="${result} $ "
+    PS1="$result"
 }
 
 PROMPT_COMMAND=__prompt_command
+
+################################################################################
+# Misc
+################################################################################
+
+export PATH="$(get_full_path $(dirname $BASH_SOURCE))/bin:${PATH}"

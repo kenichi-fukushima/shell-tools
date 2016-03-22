@@ -139,7 +139,11 @@ function __gf_clone() {
 }
 
 function __gf_help() {
-    echo "gf cd|create|help|ls"
+    cat <<EOF
+gf -- manage local Git repositories
+
+gf cd|create|help|ls
+EOF
 }
 
 function gf() {

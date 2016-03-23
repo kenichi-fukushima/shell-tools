@@ -129,8 +129,7 @@ function __gf_clone() {
 	fi
 	mkdir -p "${parent_dir}"
 	cd "${parent_dir}"
-	git clone "${url}" || exit $?
-	mv "${repository}" "${label}"
+	git clone "${url}" "${label}" || exit $?
 	cd "${label}"
     else
 	echo "${url}: the url can't be parsed."

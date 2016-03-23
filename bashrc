@@ -117,7 +117,7 @@ function __gf_clone() {
 	fi
     fi
 
-    if [[ "$url" =~ ^https?://([^/]+)/([^/]+)/([^/]+)(\.git)?$ ]]; then
+    if [[ "$url" =~ ^https?://([^/]+)/([^/]+)/([^\./]+)(\.git)?$ ]]; then
 	local site=${BASH_REMATCH[1]}
 	local organization=${BASH_REMATCH[2]}
 	local repository=${BASH_REMATCH[3]}

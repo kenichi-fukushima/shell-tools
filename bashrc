@@ -110,7 +110,7 @@ function __gf_clone() {
     else
 	local url="$1"
 	if [[ $# == 1 ]]; then
-	    local label="Dev"
+	    local label="dev"
 	else
 	    local label="$2"
 	fi
@@ -128,7 +128,7 @@ function __gf_clone() {
 	fi
 	mkdir -p "${parent_dir}"
 	cd "${parent_dir}"
-	git clone "${url}" "${label}" || exit $?
+	git clone --origin upstream "${url}" "${label}" || exit $?
 	cd "${label}"
     else
 	echo "${url}: the url can't be parsed."

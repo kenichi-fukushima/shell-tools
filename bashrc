@@ -77,6 +77,7 @@ function color_catalog256() {
 ################################################################################
 
 export __GIT_ROOT=$HOME/GitClients
+__GIT_DEFAULT_LABEL="dev"
 
 function __gf_cd() {
     local query_terms="$@"
@@ -110,7 +111,7 @@ function __gf_clone() {
     else
 	local url="$1"
 	if [[ $# == 1 ]]; then
-	    local label="dev"
+	    local label="$__GIT_DEFAULT_LABEL"
 	else
 	    local label="$2"
 	fi
@@ -216,9 +217,9 @@ function __prompt_command() {
 	local rel_path="${BASH_REMATCH[5]}"
 	local branch=$(git branch | grep "*")
 	branch=${branch#* }
-	result="${__PS_UNDERLINE}"
+	result="$__PS_UNDERLINE"
 	result="${result}${__PS_31}${project}${__PS_NO_FG}"
-	if [[ $label == Dev ]]; then
+	if [[ "$label" == "$__GIT_DEFAULT_LABEL" ]]; then
 	    local print_label=""
 	else
 	    local print_label="($label)"

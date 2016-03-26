@@ -87,7 +87,6 @@ function __gf_cd() {
     IFS="$old_ifs"
     if [[ $# == 1 ]]; then
 	cd "${__GIT_ROOT}/$1"
-	echo $PWD
     elif [[ $# == 0 ]]; then
 	echo "$(sgr 31)There is no directory that matches [$query_terms]$(sgr 0):"
     else
@@ -197,7 +196,16 @@ __PS_54=$(sgr -p '38;5;54')
 __PS_70=$(sgr -p '38;5;70')
 __PS_242=$(sgr -p '38;5;242')
 
+function __preexec_command() {
+    if [[ $1 = __prompt_command ]]; then
+	return 0
+    fi
+    local pos=$((COLUMNS - 12))
+    echo -ne "\033[1A\033[${pos}G[$(date '+%m/%d %H:%M')]\033[1B\033[G"
+}
+
 function __prompt_command() {
+    trap - DEBUG
     local status_code=$?
     local result
     if [[ $PWD =~ ^${__GIT_ROOT}/([^/]+)/([^/]+)/([^/]+)/([^/]+)(/.*)? ]]; then
@@ -229,6 +237,7 @@ function __prompt_command() {
     fi
     result="${result} $ "
     PS1="$result"
+    trap '__preexec_command $BASH_COMMAND' DEBUG
 }
 
 PROMPT_COMMAND=__prompt_command

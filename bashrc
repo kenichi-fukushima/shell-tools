@@ -205,8 +205,8 @@ function __preexec_command() {
 }
 
 function __prompt_command() {
-    trap - DEBUG
     local status_code=$?
+    trap - DEBUG
     local result
     if [[ $PWD =~ ^${__GIT_ROOT}/([^/]+)/([^/]+)/([^/]+)/([^/]+)(/.*)? ]]; then
 	local site=${BASH_REMATCH[1]}

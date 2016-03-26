@@ -196,13 +196,16 @@ __PS_31=$(sgr -p '38;5;31')
 __PS_54=$(sgr -p '38;5;54')
 __PS_70=$(sgr -p '38;5;70')
 __PS_242=$(sgr -p '38;5;242')
+__PS_248=$(sgr -p '38;5;248')
 
 function __preexec_command() {
     if [[ $1 = __prompt_command ]]; then
 	return 0
     fi
     local pos=$((COLUMNS - 12))
-    echo -ne "\033[1A\033[${pos}G[$(date '+%m/%d %H:%M')]\033[1B\033[G"
+    local c="\033["
+    local date="[$(date '+%m/%d %H:%M')]"
+    echo -ne "${c}1A${c}${pos}G${c}38;5;244m${date}${c}0m${c}1B${c}G"
 }
 
 function __prompt_command() {

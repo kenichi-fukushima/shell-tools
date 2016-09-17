@@ -117,24 +117,32 @@ function __gf_clone() {
 	fi
     fi
 
+    local site=""
+    local organization=""
+    local repository=""
     if [[ "$url" =~ ^https?://([^/]+)/([^/]+)/([^\./]+)(\.git)?$ ]]; then
-	local site=${BASH_REMATCH[1]}
-	local organization=${BASH_REMATCH[2]}
-	local repository=${BASH_REMATCH[3]}
-	local parent_dir="${__GIT_ROOT}/${site}/${organization}/${repository}"
-	local dir="${parent_dir}/${label}"
-	if [[ -a "$dir" ]]; then
-	    echo "$dir: the directory already exists."
-	    return 1
-	fi
-	mkdir -p "${parent_dir}"
-	cd "${parent_dir}"
-	git clone --origin upstream "${url}" "${label}" || exit $?
-	cd "${label}"
+	site=${BASH_REMATCH[1]}
+	organization=${BASH_REMATCH[2]}
+	repository=${BASH_REMATCH[3]}
+    elif [[ "$url" =~ ^git@([^:]+):([^/])+/(.+)\.git$  ]]; then
+	site=${BASH_REMATCH[1]}
+	organization=${BASH_REMATCH[2]}
+	repository=${BASH_REMATCH[3]}
     else
 	echo "${url}: the url can't be parsed."
 	return 1
     fi
+
+    local parent_dir="${__GIT_ROOT}/${site}/${organization}/${repository}"
+    local dir="${parent_dir}/${label}"
+    if [[ -a "$dir" ]]; then
+	echo "$dir: the directory already exists."
+	return 1
+    fi
+    mkdir -p "${parent_dir}"
+    cd "${parent_dir}"
+    git clone --origin upstream "${url}" "${label}" || exit $?
+    cd "${label}"
 }
 
 function __gf_help() {

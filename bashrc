@@ -124,7 +124,7 @@ function __gf_clone() {
 	site=${BASH_REMATCH[1]}
 	organization=${BASH_REMATCH[2]}
 	repository=${BASH_REMATCH[3]}
-    elif [[ "$url" =~ ^git@([^:]+):([^/])+/(.+)\.git$  ]]; then
+    elif [[ "$url" =~ ^git@([^:]+):([^/]+)/(.+)\.git$ ]]; then
 	site=${BASH_REMATCH[1]}
 	organization=${BASH_REMATCH[2]}
 	repository=${BASH_REMATCH[3]}
@@ -143,6 +143,15 @@ function __gf_clone() {
     cd "${parent_dir}"
     git clone --origin upstream "${url}" "${label}" || exit $?
     cd "${label}"
+
+    if [[ "$GF_NAME" ]]; then
+	echo "Setting user.name to $GF_NAME" >&2
+	git config --local user.name kenichi-fukushima
+    fi
+    if [[ "$GF_EMAIL" ]]; then
+	echo "Setting user.email to $GF_EMAIL" >&2
+	git config --local user.email kenichi.fukushima@linecorp.com
+    fi
 }
 
 function __gf_help() {
